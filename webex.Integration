@@ -1,0 +1,94 @@
+import RestSharp; // Pacote para conectar no cliente e trazer o REST
+import System;
+import System.Xml;
+
+namespace Webex.Integration{
+    
+    public class Webex {
+        
+        public static XmlDocument connect(String sitename, String username, String password) {
+            try {
+                //  Connecta o usu�rio com o webex.
+                var client = new RestClient(("https://" 
+                                + (sitename + ".webex.com/WBXService/XMLService")));
+                var request = new RestRequest(Method.POST);
+                request.AddHeader("content-type", "application/x-www-form-urlencoded");
+                request.AddParameter("application/x-www-form-urlencoded", (@"            <?xml version=""1.0"" encoding=""UTF-8""?>
+            <serv:message xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:serv=""http://www.webex.com/schemas/2002/06/service"" xsi:schemaLocation=""http://www.webex.com/schemas/2002/06/service http://www.webex.com/schemas/2002/06/service/service.xsd"">
+            <header>
+            <securityContext>
+            <webExID>" 
+                                + (username + ("</webExID>\r\n\t\t\t<password>" 
+                                + (password + ("</password>\r\n\t\t\t<siteName>" 
+                                + (sitename + "</siteName>\r\n\t\t\t</securityContext>\r\n\t\t\t</header>\r\n\t\t\t<body>\r\n        <bodyContent\r\n            xsi:ty" +
+                                "pe=\"java:com.webex.service.binding.user.GetLoginTicket\">\r\n        </bodyContent>\t\t    \r\n\t\t\t</body>\r\n" +
+                                "\t\t\t</serv:message>")))))), ParameterType.RequestBody);
+                IRestResponse response = client.Execute(request);
+                XmlDocument xDoc = new XmlDocument();
+                xDoc.LoadXml(response.Content);
+                return xDoc;
+            }
+            catch (Exception ex) {
+                throw ex;
+            }
+            
+        }
+        
+        public static XmlDocument getHistory(String sitename, String username, String password, DateTime laststartmeeting, DateTime lastendmeeting) {
+            try {
+                var client = new RestClient(("https://" 
+                                + (sitename + ".webex.com/WBXService/XMLService")));
+                var request = new RestRequest(Method.POST);
+                request.AddHeader("content-type", "application/x-www-form-urlencoded");
+                request.AddParameter("application/x-www-form-urlencoded", (@"            <?xml version=""1.0"" encoding=""UTF-8""?>
+            <serv:message xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:serv=""http://www.webex.com/schemas/2002/06/service"" xsi:schemaLocation=""http://www.webex.com/schemas/2002/06/service http://www.webex.com/schemas/2002/06/service/service.xsd"">
+            <header>
+            <securityContext>
+            <webExID>" 
+                                + (username + ("</webExID>\n\t\t\t<password>" 
+                                + (password + ("</password>\n\t\t\t<siteName>" 
+                                + (sitename + ("</siteName>\n\t\t\t</securityContext>\n\t\t\t</header>\n\t\t\t<body>\n          <bodyContent xsi:type=\n           " +
+                                " \"java:com.webex.service.binding.history.LstmeetingusageHistory\">\n            <startTimeScope>\n     " +
+                                "           <sessionStartTimeStart>" 
+                                + (laststartmeeting.ToString("MM/dd/yyyy hh:mm:ss") + ("\n                </sessionStartTimeStart>\n                <sessionStartTimeEnd>" 
+                                + (lastendmeeting.ToString("MM/dd/yyyy hh:mm:ss") + "</sessionStartTimeEnd>\n            </startTimeScope>\n        </bodyContent>\t\t    \n\t\t\t</body>\n\t\t\t</ser" +
+                                "v:message>")))))))))), ParameterType.RequestBody);
+                IRestResponse response = client.Execute(request);
+                XmlDocument xDoc = new XmlDocument();
+                xDoc.LoadXml(response.Content);
+                return xDoc;
+            }
+            catch (Exception ex) {
+                throw ex;
+            }
+            
+        }
+        
+        public static XmlDocument getHistoryAttendees(String sitename, String username, String password, String confid) {
+            try {
+                var client = new RestClient(("https://" 
+                                + (sitename + ".webex.com/WBXService/XMLService")));
+                var request = new RestRequest(Method.POST);
+                request.AddHeader("content-type", "application/x-www-form-urlencoded");
+                request.AddParameter("application/x-www-form-urlencoded", (@"            <?xml version=""1.0"" encoding=""UTF-8""?>
+            <serv:message xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:serv=""http://www.webex.com/schemas/2002/06/service"" xsi:schemaLocation=""http://www.webex.com/schemas/2002/06/service http://www.webex.com/schemas/2002/06/service/service.xsd"">
+            <header>
+            <securityContext>
+            <webExID>" 
+                                + (username + ("</webExID>\n\t\t\t<password>" 
+                                + (password + ("</password>\n\t\t\t<siteName>" 
+                                + (sitename + ("</siteName>\n\t\t\t</securityContext>\n\t\t\t</header>\n\t\t\t<body>\n        <bodyContent xsi:type=\n            \"" +
+                                "java:com.webex.service.binding.history.LstmeetingattendeeHistory\">\n            <confID>" 
+                                + (confid + "</confID>\n        </bodyContent>\t\t    \n\t\t\t</body>\n\t\t\t</serv:message>")))))))), ParameterType.RequestBody);
+                IRestResponse response = client.Execute(request);
+                XmlDocument xDoc = new XmlDocument();
+                xDoc.LoadXml(response.Content);
+                return xDoc;
+            }
+            catch (Exception ex) {
+                throw ex;
+            }
+            
+        }
+    }
+}
